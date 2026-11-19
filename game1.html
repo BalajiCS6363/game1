@@ -1,0 +1,2330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Battle Arena | AI Classroom</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+    --purple: #8054e9;
+    --blue: #2688ed;
+    --dark: #202344;
+    --muted: #707794;
+    --white: #ffffff;
+    --bg: #f1f2ff;
+    --green: #16a879;
+    --red: #e95772;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+button, input, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.topbar {
+    padding: 17px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    box-shadow: 0 4px 20px #2023440c;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--purple);
+}
+
+.brand-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-size: 25px;
+    background: linear-gradient(135deg, #8054e9, #278be9);
+}
+
+.top-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.small-btn {
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 10px;
+    background: #f0edff;
+    color: var(--purple);
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.page {
+    max-width: 1250px;
+    padding: 30px 20px 50px;
+    margin: auto;
+}
+
+.hero {
+    text-align: center;
+    margin: 15px 0 30px;
+}
+
+.hero h1 {
+    font-size: clamp(29px, 5vw, 48px);
+    font-weight: 900;
+    background: linear-gradient(90deg, #8054e9, #248fe8);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.panel {
+    background: white;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 12px 40px #35366b12;
+    border: 1px solid #ffffff;
+}
+
+.panel-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.setup-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #505875;
+}
+
+.field input, .field select {
+    border: 2px solid #e7e8f2;
+    background: #fafaff;
+    padding: 13px;
+    border-radius: 12px;
+    outline: none;
+    color: var(--dark);
+    width: 100%;
+}
+
+.field input:focus, .field select:focus {
+    border-color: var(--purple);
+}
+
+.team-inputs {
+    grid-column: 1 / -1;
+}
+
+.team-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.team-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #f7f6ff;
+}
+
+.team-input span {
+    font-size: 22px;
+}
+
+.team-input input {
+    min-width: 0;
+    border: 1px solid #e4e3f1;
+    border-radius: 9px;
+    padding: 10px;
+    width: 100%;
+    outline: none;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.primary-btn {
+    background: linear-gradient(100deg, #8054e9, #2688ed);
+    color: white;
+    border: 0;
+    border-radius: 13px;
+    padding: 15px 22px;
+    font-weight: 800;
+    font-size: 15px;
+    box-shadow: 0 6px 17px #8054e940;
+    transition: .25s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px #8054e955;
+}
+
+.full-btn {
+    width: 100%;
+    margin-top: 24px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* GAME AREA */
+
+.game-layout {
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 20px;
+    align-items: start;
+}
+
+.game-main {
+    min-width: 0;
+}
+
+.game-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.pill {
+    background: #e9e3ff;
+    color: var(--purple);
+    padding: 8px 13px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.timer {
+    background: #fff0e6;
+    color: #ed813a;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.timer.danger {
+    background: #ffe4e8;
+    color: #e53f61;
+    animation: pulse .6s infinite alternate;
+}
+
+.progress-track {
+    height: 9px;
+    background: #e9e9f5;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #8054e9, #2688ed);
+    transition: width .4s;
+}
+
+.question-card {
+    background: white;
+    padding: 30px;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px #35366b10;
+    min-height: 440px;
+    animation: appear .45s ease;
+}
+
+.question-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 23px;
+    gap: 10px;
+}
+
+.category {
+    color: #8054e9;
+    background: #f0eaff;
+    padding: 7px 12px;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.points {
+    color: #e49a20;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.question-text {
+    font-size: clamp(20px, 3vw, 27px);
+    line-height: 1.5;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+}
+
+.option {
+    background: #f8f8ff;
+    border: 2px solid #e9e9f3;
+    padding: 17px 15px;
+    border-radius: 13px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: #424a69;
+    transition: .2s;
+    min-height: 65px;
+}
+
+.option:hover:not(:disabled) {
+    border-color: var(--purple);
+    background: #f1edff;
+    transform: translateY(-2px);
+}
+
+.option .letter {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    background: #e9e5ff;
+    color: var(--purple);
+    border-radius: 8px;
+    margin-right: 9px;
+    font-size: 12px;
+}
+
+.option.correct {
+    border-color: var(--green);
+    background: #e3fff3;
+    color: #087d56;
+}
+
+.option.wrong {
+    border-color: var(--red);
+    background: #fff0f2;
+    color: #b9344d;
+}
+
+.option:disabled {
+    cursor: default;
+}
+
+.explanation {
+    display: none;
+    margin-top: 20px;
+    background: #edfff6;
+    border-left: 5px solid var(--green);
+    padding: 15px;
+    border-radius: 10px;
+    color: #287558;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.explanation.show {
+    display: block;
+    animation: appear .3s ease;
+}
+
+.game-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.secondary-btn {
+    padding: 12px 17px;
+    border-radius: 11px;
+    border: 0;
+    background: #ebeaff;
+    color: #6945c4;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.green-btn {
+    background: #ddf8ec;
+    color: #098354;
+}
+
+.red-btn {
+    background: #ffe7eb;
+    color: #c83f59;
+}
+
+.game-controls button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.sidebar {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px #35366b0c;
+}
+
+.sidebar h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.team-score {
+    padding: 14px 12px;
+    background: #f8f8ff;
+    border: 2px solid transparent;
+    border-radius: 13px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.team-score.active {
+    border-color: var(--purple);
+    background: #f0eaff;
+}
+
+.team-score-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.team-score-name {
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.team-score-value {
+    color: var(--purple);
+    font-size: 21px;
+    font-weight: 900;
+}
+
+.active-tag {
+    font-size: 9px;
+    color: #8054e9;
+    font-weight: 800;
+    margin-top: 5px;
+}
+
+.sidebar-note {
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.7;
+    margin-top: 15px;
+}
+
+/* WINNER */
+
+.winner-card {
+    text-align: center;
+    padding: 45px 20px;
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 12px 40px #35366b12;
+    animation: appear .5s ease;
+}
+
+.trophy {
+    font-size: 80px;
+    animation: bounce 1.5s infinite;
+}
+
+.winner-card h2 {
+    font-size: 34px;
+    color: var(--purple);
+    margin: 12px 0;
+}
+
+.winner-name {
+    font-size: 25px;
+    font-weight: 900;
+    margin: 15px;
+}
+
+.final-scores {
+    max-width: 450px;
+    margin: 25px auto;
+    text-align: left;
+}
+
+.final-score-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px;
+    background: #f7f5ff;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+/* EFFECTS */
+
+.confetti {
+    position: fixed;
+    top: -20px;
+    font-size: 24px;
+    pointer-events: none;
+    z-index: 1000;
+    animation: fall 2.8s linear forwards;
+}
+
+@keyframes fall {
+    to { transform: translateY(110vh) rotate(600deg); opacity: 0; }
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    to { transform: scale(1.08); }
+}
+
+@keyframes bounce {
+    50% { transform: translateY(-12px); }
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+@media(max-width: 850px) {
+    .game-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width: 580px) {
+    .setup-grid, .team-list, .options {
+        grid-template-columns: 1fr;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+
+    .question-card {
+        padding: 19px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+}
+
+@media print {
+    .topbar, footer, button {
+        display: none !important;
+    }
+}
+
+/* PROJECTOR FULL SCREEN */
+body.projector .page {
+    max-width: 1550px;
+}
+
+body.projector .question-text {
+    font-size: clamp(27px, 3.3vw, 39px);
+}
+
+body.projector .option {
+    font-size: 18px;
+    padding: 22px;
+}
+
+body.projector .question-card {
+    min-height: 520px;
+}
+
+body.projector .topbar {
+    padding: 10px 5%;
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-icon">🤖</div>
+        QUIZ BATTLE ARENA
+    </div>
+
+    <div class="top-actions">
+        <button class="small-btn" onclick="toggleProjector()">
+            📽 Projector
+        </button>
+        <button class="small-btn" onclick="goHome()">
+            🏠 Home
+        </button>
+    </div>
+
+</header>
+
+<main class="page">
+
+    <div class="hero">
+        <h1>⚡ QUIZ BATTLE ARENA</h1>
+        <p>Think Fast. Answer Smart. Become the Champion! 🏆</p>
+    </div>
+
+    <!-- SETUP SCREEN -->
+
+    <section id="setupScreen" class="panel">
+
+        <h2 class="panel-title">🎮 Set Up Your Classroom Battle</h2>
+
+        <div class="setup-grid">
+
+            <div class="field">
+                <label>📚 Select Subject</label>
+                <select id="subject">
+                    <option value="All">All Topics</option>
+                    <option value="AI">Artificial Intelligence</option>
+                    <option value="ML">Machine Learning</option>
+                    <option value="Data">Data & Data Literacy</option>
+                    <option value="Computer">Computer Science</option>
+                    <option value="Ethics">AI Ethics & Safety</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>👥 Number of Teams</label>
+                <select id="teamCount" onchange="renderTeamInputs()">
+                    <option value="2">2 Teams</option>
+                    <option value="3">3 Teams</option>
+                    <option value="4">4 Teams</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>❓ Number of Questions</label>
+                <select id="questionCount">
+                    <option value="5">5 Questions</option>
+                    <option value="10" selected>10 Questions</option>
+                    <option value="15">15 Questions</option>
+                    <option value="20" selected>20 Questions</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>⏱ Timer Per Question</label>
+                <select id="timerDuration">
+                    <option value="15">15 Seconds</option>
+                    <option value="20" selected>20 Seconds</option>
+                    <option value="30">30 Seconds</option>
+                    <option value="45">45 Seconds</option>
+                    <option value="0">No Timer</option>
+                </select>
+            </div>
+
+            <div class="field team-inputs">
+                <label>🏆 Customize Team Names</label>
+                <div class="team-list" id="teamInputs"></div>
+            </div>
+
+        </div>
+
+        <button class="primary-btn full-btn" onclick="startGame()">
+            🚀 START BATTLE
+        </button>
+
+    </section>
+
+
+    <!-- GAME SCREEN -->
+
+    <section id="gameScreen" class="hidden">
+
+        <div class="game-layout">
+
+            <div class="game-main">
+
+                <div class="game-meta">
+
+                    <span class="pill" id="roundLabel">
+                        QUESTION 1
+                    </span>
+
+                    <span class="timer" id="timer">
+                        ⏱ 20s
+                    </span>
+
+                    <span class="pill" id="turnLabel">
+                        Team 1's Turn
+                    </span>
+
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <div class="question-card">
+
+                    <div class="question-top">
+                        <span class="category" id="category">
+                            ARTIFICIAL INTELLIGENCE
+                        </span>
+
+                        <span class="points">
+                            ⭐ 10 POINTS
+                        </span>
+                    </div>
+
+                    <h2 class="question-text" id="questionText">
+                        What is Artificial Intelligence?
+                    </h2>
+
+                    <div class="options" id="options"></div>
+
+                    <div class="explanation" id="explanation"></div>
+
+                </div>
+
+                <div class="game-controls">
+
+                    <button class="secondary-btn"
+                        id="revealBtn" onclick="revealAnswer()">
+                        👀 Reveal Answer
+                    </button>
+
+                    <button class="secondary-btn green-btn"
+                        id="correctBtn" onclick="awardPoints()">
+                        ✅ Award 10 Points
+                    </button>
+
+                    <button class="secondary-btn red-btn"
+                        id="wrongBtn" onclick="markWrong()">
+                        ❌ No Points
+                    </button>
+
+                    <button class="primary-btn"
+                        id="nextBtn" onclick="nextQuestion()">
+                        NEXT QUESTION ➜
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- SCOREBOARD -->
+
+            <aside class="sidebar">
+
+                <h3>🏆 LIVE SCOREBOARD</h3>
+
+                <div id="scoreboard"></div>
+
+                <p class="sidebar-note">
+                    👆 Teacher: Select the team whose turn it is.
+                    <br><br>
+                    Correct choices earn 10 points automatically.
+                    <br><br>
+                    For answers given outside the choices, the teacher can award points manually.
+                </p>
+
+            </aside>
+
+        </div>
+
+    </section>
+
+
+    <!-- WINNER SCREEN -->
+
+    <section id="winnerScreen" class="hidden">
+
+        <div class="winner-card">
+
+            <div class="trophy">🏆</div>
+
+            <h2>GAME OVER!</h2>
+
+            <p>The classroom champion is...</p>
+
+            <div class="winner-name" id="winnerName">
+                TEAM CHAMPION
+            </div>
+
+            <p>🎉 Amazing performance, everyone!</p>
+
+            <div class="final-scores" id="finalScores"></div>
+
+            <button class="primary-btn" onclick="goHome()">
+                🔄 PLAY AGAIN
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+    🤖 Quiz Battle Arena | Smart Classroom Learning
+    <br>
+    Made for curious minds and future innovators! ✨
+</footer>
+
+
+<script>
+
+// ========================================
+// QUESTION DATABASE
+// ADD OR EDIT QUESTIONS HERE
+// ========================================
+
+const questionBank = [
+
+{
+    category: "Artificial Intelligence",
+    topic: "AI",
+    question: "What is Artificial Intelligence?",
+    options: [
+        "Making machines perform tasks that usually require human intelligence",
+        "Using fixed instructions for every situation, without adapting to new input",
+        "Connecting computers so they can exchange information",
+        "Storing large amounts of information for later use"
+    ],
+    answer: 0,
+    explanation: "AI enables machines to perform tasks such as learning, reasoning and recognizing patterns."
+},
+
+{
+    category: "Artificial Intelligence",
+    topic: "AI",
+    question: "Which of these is an example of AI in everyday life?",
+    options: [
+        "A calculator that follows the same arithmetic rules",
+        "A voice assistant that interprets spoken requests",
+        "A digital clock that displays the time",
+        "A search page that lists results in a fixed order"
+    ],
+    answer: 1,
+    explanation: "Voice assistants use AI to understand spoken instructions and respond."
+},
+
+{
+    category: "Machine Learning",
+    topic: "ML",
+    question: "What is Machine Learning?",
+    options: [
+        "Programming every possible answer directly into a computer",
+        "Helping computers learn patterns from examples and data",
+        "Giving a computer more storage so it can save extra files",
+        "Using a computer to carry out only repeated arithmetic"
+    ],
+    answer: 0,
+    explanation: "Machine Learning allows computers to learn patterns from data and make predictions."
+},
+
+{
+    category: "Machine Learning",
+    topic: "ML",
+    question: "Which is an example of supervised learning?",
+    options: [
+        "Grouping news articles by similarity without example labels",
+        "Training with examples that include the correct category",
+        "Finding hidden groups in data without known answers",
+        "Allowing a program to explore actions using rewards"
+    ],
+    answer: 1,
+    explanation: "Supervised learning uses labelled training data where the correct answers are provided."
+},
+
+{
+    category: "Data Literacy",
+    topic: "Data",
+    question: "What is primary data?",
+    options: [
+        "Information collected first-hand for a specific investigation",
+        "Information summarized from several published reports",
+        "Information copied from an earlier study on a similar topic",
+        "Information downloaded from a public database"
+    ],
+    answer: 0,
+    explanation: "Primary data is collected first-hand by the person conducting the study."
+},
+
+{
+    category: "Data Literacy",
+    topic: "Data",
+    question: "Which graph is best for comparing different categories?",
+    options: [
+        "A line graph showing change across a continuous timeline",
+        "A bar graph with one bar for each category",
+        "A scatter plot showing the relationship between two values",
+        "A histogram grouping numerical values into ranges"
+    ],
+    answer: 1,
+    explanation: "Bar graphs use bars to compare values across different categories."
+},
+
+{
+    category: "Computer Science",
+    topic: "Computer",
+    question: "What is the brain of a computer?",
+    options: [
+        "RAM, which temporarily holds data currently in use",
+        "The CPU, which processes instructions",
+        "The motherboard, which connects major components",
+        "The storage drive, which keeps files when power is off"
+    ],
+    answer: 2,
+    explanation: "The CPU processes instructions and performs calculations."
+},
+
+{
+    category: "Computer Science",
+    topic: "Computer",
+    question: "Which of these is an input device?",
+    options: [
+        "A monitor that displays information from the computer",
+        "A printer that produces a paper copy of a document",
+        "A speaker that plays audio from the computer",
+        "A keyboard that sends keystrokes to the computer"
+    ],
+    answer: 3,
+    explanation: "A keyboard sends text and commands into a computer."
+},
+
+{
+    category: "AI Ethics",
+    topic: "Ethics",
+    question: "Why is data privacy important?",
+    options: [
+        "To control how personal information is collected and shared",
+        "To make useful information impossible to access",
+        "To ensure every online service stores the same details",
+        "To let organizations keep personal data forever"
+    ],
+    answer: 0,
+    explanation: "Data privacy protects personal information from unwanted access and misuse."
+},
+
+{
+    category: "AI Ethics",
+    topic: "Ethics",
+    question: "What does AI bias mean?",
+    options: [
+        "A model producing different results because it runs slowly",
+        "A system producing unfair outcomes due to data or design",
+        "A model needing more storage as its dataset grows",
+        "A program being unable to connect to the internet"
+    ],
+    answer: 1,
+    explanation: "AI bias can lead to unfair decisions when data or system design is unbalanced."
+},
+
+{
+    category: "Artificial Intelligence",
+    topic: "AI",
+    question: "Which technology helps self-driving cars recognize roads and objects?",
+    options: [
+        "Computer vision, which analyzes images from cameras",
+        "Speech recognition, which converts spoken words to text",
+        "Word processing, which formats written documents",
+        "File compression, which reduces storage size"
+    ],
+    answer: 0,
+    explanation: "Computer vision helps machines interpret images and video from cameras."
+},
+
+{
+    category: "Data Literacy",
+    topic: "Data",
+    question: "What is data cleaning?",
+    options: [
+        "Removing every unusual value, even when it is correct",
+        "Finding and fixing errors, duplicates, or inconsistent formats",
+        "Sorting all records alphabetically without checking their values",
+        "Converting a dataset into a graph before analyzing it"
+    ],
+    answer: 1,
+    explanation: "Data cleaning improves data quality by fixing errors, duplicates and missing values."
+},
+
+{
+    category: "Machine Learning",
+    topic: "ML",
+    question: "What is a feature in a machine learning dataset?",
+    options: [
+        "An input measurement or property used by a model",
+        "The answer a model is trained to predict",
+        "A rule that describes how a computer stores files",
+        "A score used only to compare two computer processors"
+    ],
+    answer: 0,
+    explanation: "Features are the input characteristics used by a machine learning model."
+},
+
+{
+    category: "Computer Science",
+    topic: "Computer",
+    question: "Which memory loses its contents when power is turned off?",
+    options: [
+        "A hard disk drive used for long-term file storage",
+        "ROM that stores instructions used during startup",
+        "RAM that temporarily holds active programs and data",
+        "An SSD that keeps files without continuous power"
+    ],
+    answer: 2,
+    explanation: "RAM is volatile memory, so its contents are lost when power is removed."
+},
+
+{
+    category: "AI Ethics",
+    topic: "Ethics",
+    question: "Which is a responsible way to use AI?",
+    options: [
+        "Use an AI answer as final proof whenever it sounds confident",
+        "Enter private details so an AI can give a more personal answer",
+        "Check important AI answers and protect personal information",
+        "Submit generated work without checking facts or explaining it"
+    ],
+    answer: 2,
+    explanation: "Responsible AI use includes checking accuracy and protecting personal information."
+},
+
+{
+    category: "Artificial Intelligence",
+    topic: "AI",
+    question: "What is an algorithm?",
+    options: [
+        "A step-by-step set of instructions for solving a problem",
+        "A program's stored data after it has finished running",
+        "A physical part that connects a computer to a network",
+        "A language used only to create websites"
+    ],
+    answer: 0,
+    explanation: "An algorithm is a clear sequence of steps used to complete a task."
+},
+
+{
+    category: "Data Literacy",
+    topic: "Data",
+    question: "Which of these is an example of secondary data?",
+    options: [
+        "Recording answers from interviews you conduct yourself",
+        "Counting books in your school library this week",
+        "Using results from a research report published by someone else",
+        "Measuring rainfall at your school each morning"
+    ],
+    answer: 2,
+    explanation: "Secondary data has already been collected by someone else."
+},
+
+{
+    category: "Machine Learning",
+    topic: "ML",
+    question: "What is prediction in machine learning?",
+    options: [
+        "Choosing a result at random before examining any examples",
+        "Estimating an outcome by applying patterns learned from data",
+        "Repeating the most recent training example as the answer",
+        "Removing the input values before a model is run"
+    ],
+    answer: 1,
+    explanation: "A trained model uses patterns learned from data to estimate outcomes."
+},
+
+{
+    category: "Computer Science",
+    topic: "Computer",
+    question: "What does URL stand for?",
+    options: [
+        "Uniform Resource Locator",
+        "Universal Routing Location",
+        "User Reference Label",
+        "Unified Resource Link"
+    ],
+    answer: 0,
+    explanation: "A URL is the address used to locate a resource on the internet."
+},
+
+{
+    category: "Artificial Intelligence",
+    topic: "AI",
+    question: "Which AI application can recognize faces in images?",
+    options: [
+        "Face recognition, which compares visual patterns in faces",
+        "Optical character recognition, which reads printed text",
+        "Image compression, which reduces a picture's file size",
+        "Color correction, which adjusts brightness and contrast"
+    ],
+    answer: 0,
+    explanation: "Face recognition uses AI techniques to identify or verify faces."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "A lamp turns on whenever its light sensor detects darkness. Is this necessarily AI?",
+    options: ["Yes, because any device using a sensor is intelligent", "No, a fixed if-then rule can do this without learning", "Yes, because the lamp makes a decision", "No, because computers cannot use sensor readings"],
+    answer: 1,
+    explanation: "A device can react to inputs using fixed rules; that alone does not mean it learns or uses AI."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "What best describes narrow AI?",
+    options: ["A system designed to perform a limited range of tasks", "A system that understands every subject like a person", "A computer that can only process small files", "A program that works without data or instructions"],
+    answer: 0,
+    explanation: "Most AI today is narrow AI: it is built for particular tasks rather than general human-like ability."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "A computer turns spoken words into written text. Which task is it mainly performing?",
+    options: ["Image classification", "Speech recognition", "Data compression", "Route planning"],
+    answer: 1,
+    explanation: "Speech recognition identifies words in audio and converts them into text."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "A music app suggests songs similar to ones you played. What is the main purpose of its AI?",
+    options: ["Recommend items based on patterns in your activity", "Guarantee that every suggested song will be liked", "Store music files inside the recommendation model", "Replace the speakers that play the songs"],
+    answer: 0,
+    explanation: "Recommendation systems use patterns in activity or item similarities to suggest possible choices, not guaranteed favorites."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "Which task is most directly an example of natural language processing?",
+    options: ["Estimate fruit size from a photograph", "Find the main idea in a paragraph of text", "Measure a processor's temperature", "Sort files by their creation date"],
+    answer: 1,
+    explanation: "Natural language processing works with human language, such as identifying the main idea in text."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "What does a generative AI system primarily do?",
+    options: ["Create new content based on patterns learned from examples", "Retrieve only exact copies of training examples", "Check every statement against a trusted source automatically", "Store every user request as a permanent file"],
+    answer: 0,
+    explanation: "Generative AI produces new content, but its output still needs checking."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "Why can a chatbot give a fluent answer that is still incorrect?",
+    options: ["Fluent wording proves that the answer was verified", "It may generate likely-sounding text without checking facts", "Chatbots can only repeat exact sentences from websites", "A longer answer always contains more accurate information"],
+    answer: 1,
+    explanation: "A convincing style does not guarantee factual accuracy; important claims should be checked."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "A camera system labels a picture as showing a bicycle. What kind of AI task is this?",
+    options: ["Classification", "Translation", "Data backup", "Encryption"],
+    answer: 0,
+    explanation: "Classification assigns an input, such as an image, to a category."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "Why might an AI system use many varied examples instead of one example?",
+    options: ["They can help it learn patterns that apply more broadly", "One example always makes a model too accurate to use", "Examples remove the need to test the system", "More examples guarantee the model has no bias"],
+    answer: 0,
+    explanation: "Varied, relevant examples can help a system handle different cases, but do not guarantee fairness or accuracy."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "Which statement about a voice assistant is most accurate?",
+    options: ["It may recognize a request without understanding it exactly as a person does", "It understands every word in every accent equally well", "It can answer only when the speaker types the request", "It learns private information only from the speaker's voice"],
+    answer: 0,
+    explanation: "Voice assistants process audio and language, but may misrecognize speech or misunderstand context."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "What is one useful role for a human reviewing an AI-screened application?",
+    options: ["Accept every AI ranking without review", "Check the recommendation for errors or unfairness", "Hide the use of AI from everyone affected", "Remove records so the decision cannot be checked"],
+    answer: 1,
+    explanation: "Human review can catch mistakes and unfair outcomes, especially when decisions affect people."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "A farm uses images to spot unhealthy leaves. What is the system mainly analyzing?",
+    options: ["Visual patterns in the leaf images", "File names on the farmer's computer", "The number of letters in each plant name", "Sound levels in the storage room"],
+    answer: 0,
+    explanation: "Image-based plant checks use visual patterns, often through computer vision."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "How should you evaluate an AI tool that summarizes articles?",
+    options: ["Check whether it preserves the article's key facts", "Choose the summary with the most impressive vocabulary", "Assume the shortest summary is always most accurate", "Check only whether it uses complete sentences"],
+    answer: 0,
+    explanation: "A useful summary should accurately preserve the source's important points, not just sound polished."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "Why test an AI system on examples it was not trained on?",
+    options: ["To see whether it handles new cases, not only memorized examples", "To make it access training files faster", "To increase the number of training labels", "To prove every prediction will be correct"],
+    answer: 0,
+    explanation: "Separate examples give evidence about how well a system may work on unfamiliar cases."
+},
+{
+    category: "Artificial Intelligence", topic: "AI",
+    question: "A system recognizes cats in bright photos but not dim ones. What is a sensible next step?",
+    options: ["Test varied lighting and improve the examples or system", "Remove all dim photos without checking", "Assume bright-photo results apply in every situation", "Rename image files so the system learns faster"],
+    answer: 0,
+    explanation: "Testing different conditions can reveal where a system struggles and guide improvements."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A model sorts emails into 'spam' and 'not spam' using examples with those labels. What task is this?",
+    options: ["Classification", "Regression", "Clustering", "Compression"],
+    answer: 0,
+    explanation: "Classification predicts a category, and the example emails include known category labels."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A model estimates tomorrow's temperature as 24 degrees. Which type of task is this?",
+    options: ["Regression, because it predicts a numerical value", "Classification, because it chooses a named category", "Clustering, because it groups similar records", "Encryption, because it protects a measurement"],
+    answer: 0,
+    explanation: "Regression predicts a numerical quantity, such as a temperature."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A program groups similar plants without being told their species names. Which approach fits best?",
+    options: ["Unsupervised learning", "Supervised learning", "Manual sorting only", "Data encryption"],
+    answer: 0,
+    explanation: "Unsupervised learning looks for structure in data without provided answer labels."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "In a simple reinforcement-learning game, what does a reward signal do?",
+    options: ["Provides feedback about the result of an action", "Names the input features before training", "Guarantees the best action is found immediately", "Removes the need to try different actions"],
+    answer: 0,
+    explanation: "Rewards give feedback that can help an agent learn which actions lead to better outcomes."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "Why keep some labeled examples separate from the training set?",
+    options: ["To check predictions on examples the model did not learn from", "To make the model memorize training examples faster", "To guarantee the examples contain no errors", "To prevent the model from using its input features"],
+    answer: 0,
+    explanation: "A separate test set helps estimate performance on data not used to fit the model."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A model memorizes training examples but performs poorly on new examples. What is this called?",
+    options: ["Overfitting", "Under-sampling", "Data cleaning", "Feature scaling"],
+    answer: 0,
+    explanation: "Overfitting happens when a model fits training details too closely and does not generalize well."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "What does it mean for a model to generalize well?",
+    options: ["It performs usefully on new examples from a similar task", "It gives the same answer for every possible input", "It stores every training example without making predictions", "It has the largest possible number of features"],
+    answer: 0,
+    explanation: "Generalization is the ability to apply learned patterns to new, relevant examples."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "In a dataset of labeled animal photos, what is a label?",
+    options: ["The known category, such as 'bird' or 'cat'", "A pixel measurement used as an input feature", "The file size of each photo", "The name of the computer used for training"],
+    answer: 0,
+    explanation: "A label is the known answer or category associated with a training example."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A dataset has a few missing ages. What should happen before training?",
+    options: ["Investigate the missing values and choose a suitable way to handle them", "Replace every missing age with zero without checking", "Delete the entire dataset because one value is missing", "Copy the previous person's age into every blank"],
+    answer: 0,
+    explanation: "Missing data should be examined; the right treatment depends on why values are missing and how they are used."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "Ice-cream sales and beach visits both rise in summer. What does this observation prove?",
+    options: ["They are associated, but this alone does not prove one causes the other", "Ice-cream sales directly cause people to visit beaches", "Beach visits are the only reason ice-cream sales rise", "The measurements must have been recorded incorrectly"],
+    answer: 0,
+    explanation: "Association can be caused by other factors, such as warm weather; it does not by itself prove causation."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "In a model predicting a student's final score, which could be a feature?",
+    options: ["The student's practice quiz scores", "The final score the model is trying to predict", "The model's explanation after making a prediction", "The title of the spreadsheet file"],
+    answer: 0,
+    explanation: "A feature is information used as an input; the final score is the target in this example."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "Why test a model on data that was not used for training?",
+    options: ["It helps reveal whether the model learned useful patterns beyond its examples", "It makes the model's training labels more detailed", "It guarantees the training data was collected fairly", "It makes every prediction certain"],
+    answer: 0,
+    explanation: "Separate testing helps check whether a model's performance extends beyond its training examples."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A model trained mostly on daytime road images struggles at night. What is a likely concern?",
+    options: ["Its examples may not represent the conditions where it is used", "It has too many labels for daytime images", "Night images cannot be stored as digital data", "The model must use regression rather than classification"],
+    answer: 0,
+    explanation: "Training data should reflect relevant real-world conditions or performance may be weaker in underrepresented cases."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A movie recommender uses viewing history. What is one reasonable limitation?",
+    options: ["Past choices may not represent what a person wants to watch today", "Viewing history always reveals exact preferences", "A recommendation model cannot use more than one feature", "Past activity makes new recommendations impossible"],
+    answer: 0,
+    explanation: "Past behavior can be useful but incomplete; interests and circumstances can change."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "If a model has 90% accuracy on a test set, what is the safest interpretation?",
+    options: ["It was correct on about 90% of those examples, but other checks may matter", "It will be correct on exactly 90% of every future group", "It is fair to every group because its accuracy is high", "It had no incorrect predictions in the test set"],
+    answer: 0,
+    explanation: "Accuracy describes performance on a particular set; it does not guarantee future results or fairness across groups."
+},
+{
+    category: "Machine Learning", topic: "ML",
+    question: "A model's predictions change greatly when a few training examples change. What might this suggest?",
+    options: ["The model may be unstable and needs further evaluation", "The model has proven that its labels are correct", "The new examples should always be removed", "The model no longer needs a test set"],
+    answer: 0,
+    explanation: "Large changes from small data changes can be a sign that the model's behavior is unstable."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "Which is an example of qualitative data?",
+    options: ["The color students choose for a poster", "The number of students in each class", "The distance from home to school in kilometers", "The time taken to finish a race"],
+    answer: 0,
+    explanation: "Qualitative data describes qualities or categories rather than numerical measurements."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A survey records each student's favorite school subject. What kind of data is this?",
+    options: ["Categorical data", "Continuous measurement data", "A time series", "A numerical ratio"],
+    answer: 0,
+    explanation: "Favorite subjects are names of groups or categories, not measured amounts."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "Most students score near 70, but one score is 5. Which measure is usually less affected by that unusual value?",
+    options: ["Median", "Mean", "Range", "Total"],
+    answer: 0,
+    explanation: "The median is based on the middle ordered value and is usually less affected by an extreme value than the mean."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "When is the mean a useful summary of a set of measurements?",
+    options: ["When values are numerical and extreme outliers are not distorting it", "When every value is a category name", "When the order of the values is the only information needed", "When some values are missing and treated as zero automatically"],
+    answer: 0,
+    explanation: "The mean summarizes numerical values, but unusual extremes can pull it away from what is typical."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A school surveys only students in the chess club about favorite sports. What is the main risk?",
+    options: ["The sample may not represent all students", "The answers are automatically secondary data", "The survey has too many different categories", "The results cannot be counted"],
+    answer: 0,
+    explanation: "A group selected from one club may have different interests from the whole school."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "In a study about all ninth-grade students, what is the population?",
+    options: ["Every ninth-grade student the study is about", "Only the students who answered the survey", "The questions printed on the survey", "The average value calculated from the answers"],
+    answer: 0,
+    explanation: "The population is the full group a study aims to understand; the respondents are usually a sample."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A chart compares the number of books read by students in four classes. Which display is suitable?",
+    options: ["A bar chart with one bar for each class", "A histogram treating each class name as a numeric range", "A line chart joining unrelated class categories", "A scatter plot with no second measurement"],
+    answer: 0,
+    explanation: "A bar chart is appropriate for comparing counts across separate categories."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A line graph shows daily temperatures across a month. What can it show especially clearly?",
+    options: ["How the measured value changes over time", "Which category has the most items when categories are unordered", "The exact cause of each temperature change", "Whether every measurement was collected accurately"],
+    answer: 0,
+    explanation: "A line graph can make trends and changes over time easier to see, but does not show causes by itself."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "Two measurements tend to rise together. What does that tell you by itself?",
+    options: ["They may be associated, but one may not cause the other", "One measurement definitely causes the other", "The data must have been collected from the same person", "Both measurements are necessarily increasing over time"],
+    answer: 0,
+    explanation: "A relationship between measurements does not by itself establish cause and effect."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "Why should a report say where its data came from?",
+    options: ["So readers can judge the source and understand the context", "So readers do not need to examine how data was collected", "So the data becomes primary data automatically", "So every conclusion is guaranteed to be correct"],
+    answer: 0,
+    explanation: "Source information helps readers assess how data was collected and whether it fits the question."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A spreadsheet has blank entries in the 'hours of sleep' column. What is a careful first step?",
+    options: ["Find out why values are missing before deciding how to handle them", "Fill every blank with the class average without recording the change", "Delete all rows that contain any blank field", "Treat each blank as zero hours automatically"],
+    answer: 0,
+    explanation: "Understanding why information is missing helps avoid introducing misleading values or removing useful records."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A list contains the same student's response twice because of an import error. What should data cleaning do?",
+    options: ["Check for and handle the duplicate according to the study rules", "Keep both copies because more rows always improve a result", "Change one copy to a different answer at random", "Delete every response from that class"],
+    answer: 0,
+    explanation: "Duplicates can distort counts and should be checked and handled consistently."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "One column records height in centimeters and another record uses meters. What should be done before comparing them?",
+    options: ["Convert measurements to a consistent unit", "Add the numbers without changing the units", "Replace all measurements with their row numbers", "Sort the values alphabetically"],
+    answer: 0,
+    explanation: "Consistent units are needed for meaningful numerical comparisons."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "Which survey question is most likely to lead students toward a particular answer?",
+    options: ["How helpful was the excellent new library?", "How often did you visit the library this month?", "Which library area did you use most recently?", "How many days was the library open last week?"],
+    answer: 0,
+    explanation: "Calling the library 'excellent' suggests a positive opinion before the student answers."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A graph's vertical axis starts at 98 instead of zero, making small differences look large. What should a reader do?",
+    options: ["Check the axis scale before judging the size of the difference", "Assume the tallest bar is exactly twice as large", "Ignore all labels and compare bar colors", "Conclude that the measurements are false"],
+    answer: 0,
+    explanation: "Axis choices can change how differences appear, so readers should inspect the scale and labels."
+},
+{
+    category: "Data Literacy", topic: "Data",
+    question: "A class shares a dataset publicly. Which step best protects students' privacy?",
+    options: ["Remove or mask identifying details that are not needed", "Keep names because the file contains schoolwork", "Add birth dates so records are easier to distinguish", "Publish passwords separately from the dataset"],
+    answer: 0,
+    explanation: "Removing unnecessary identifiers reduces the chance that records can be linked to individual students."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "Which statement correctly distinguishes hardware from software?",
+    options: ["Hardware is physical equipment; software is instructions and programs", "Hardware is stored online; software is stored only on paper", "Hardware processes only data; software stores only images", "Hardware is temporary; software always lasts forever"],
+    answer: 0,
+    explanation: "Hardware refers to physical components, while software consists of programs and instructions."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "What is a main role of an operating system?",
+    options: ["Manage computer resources and provide services for applications", "Create every document saved on the computer", "Replace the need for a processor and memory", "Guarantee that downloaded files are safe"],
+    answer: 0,
+    explanation: "An operating system manages resources such as memory and devices and supports applications."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "A touchscreen displays a picture and accepts a tap. How does it function?",
+    options: ["As both an output device and an input device", "Only as a storage device", "Only as an output device", "Only as a network device"],
+    answer: 0,
+    explanation: "It displays visual output and also sends touch input to the computer."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "Why does a computer use both RAM and long-term storage?",
+    options: ["RAM holds active data temporarily; storage keeps files when power is off", "RAM keeps files permanently; storage holds only the current screen", "Both have the same purpose, but use different names", "Storage processes instructions while RAM connects to the internet"],
+    answer: 0,
+    explanation: "RAM is fast temporary working memory; drives such as SSDs keep data without power."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "Which statement best describes the relationship between the internet and the Web?",
+    options: ["The Web is a service that uses the internet; the internet also supports other services", "The internet is a website inside the Web", "They are two names for the same single application", "The Web connects devices, while the internet stores web pages"],
+    answer: 0,
+    explanation: "The internet is a network infrastructure; the Web is one service that runs on it."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "What does a web browser mainly help a user do?",
+    options: ["Request and display web pages", "Repair the physical network cables", "Translate every file on a computer into a web page", "Create the internet connection without a network"],
+    answer: 0,
+    explanation: "A browser requests web resources and presents them to the user."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "What is the main purpose of an IP address on a network?",
+    options: ["Help identify and route information to a device or network interface", "Describe the contents of every file on a device", "Encrypt a user's password automatically", "Show which person owns a computer"],
+    answer: 0,
+    explanation: "IP addresses help networks direct data to the appropriate destination; they do not reliably identify a person."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "An email asks you to sign in through an unfamiliar link to avoid losing your account. What is the safest response?",
+    options: ["Avoid the link and check the account through its official app or site", "Reply with your password to prove the account is yours", "Forward the email to classmates so they can test it", "Open the link on another device and enter your details"],
+    answer: 0,
+    explanation: "Unexpected urgent messages may be phishing; use a trusted official route instead of the supplied link."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "Which password is generally the strongest choice?",
+    options: ["A long, unique passphrase not reused on other sites", "A short word followed by the current year", "The same memorable password used for every account", "A class name that friends can easily guess"],
+    answer: 0,
+    explanation: "Long, unique passwords are harder to guess, and not reusing them limits damage if one account is exposed."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "What extra protection does two-factor authentication provide?",
+    options: ["It asks for another proof of identity in addition to the password", "It makes a password unnecessary in every situation", "It stores a second copy of every file", "It guarantees that a device cannot be infected"],
+    answer: 0,
+    explanation: "A second factor can help protect an account even if its password is discovered."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "Why keep a backup of important school files?",
+    options: ["To restore copies if the original files are lost or damaged", "To make the original files impossible to edit", "To prevent every online account from being accessed", "To ensure that files never contain mistakes"],
+    answer: 0,
+    explanation: "A separate backup can help recover information after accidental deletion, device failure, or damage."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "What does a binary digit (bit) represent?",
+    options: ["One of two possible values, commonly written as 0 or 1", "A group of exactly eight files", "A letter stored only as a picture", "A measurement of internet speed"],
+    answer: 0,
+    explanation: "A bit is a basic unit of digital information with two possible states."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "Which task is a graphics processing unit (GPU) especially suited to?",
+    options: ["Performing many similar calculations in parallel, such as image processing", "Keeping files after a computer is unplugged", "Replacing the operating system's file manager", "Connecting a keyboard through a cable"],
+    answer: 0,
+    explanation: "GPUs can perform many parallel calculations and are commonly used for graphics and some AI workloads."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "What does a home router commonly do?",
+    options: ["Connect devices on a local network and direct traffic toward other networks", "Display websites without using a browser", "Save every file created by each device", "Convert a computer's software into hardware"],
+    answer: 0,
+    explanation: "A router directs network traffic and often connects a home network to an internet service."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "What does a file extension such as '.jpg' usually indicate?",
+    options: ["A suggested file format, though it does not prove the contents are safe", "The exact person who created the file", "The file's guaranteed accuracy", "The amount of memory installed in the computer"],
+    answer: 0,
+    explanation: "Extensions often indicate a format, but names can be changed and do not guarantee safety or contents."
+},
+{
+    category: "Computer Science", topic: "Computer",
+    question: "Why is it useful to split a long computer task into smaller steps?",
+    options: ["Each step can be checked and corrected more easily", "Small steps guarantee a program never has a bug", "The computer can then ignore the order of instructions", "Smaller steps remove the need to define the task"],
+    answer: 0,
+    explanation: "Breaking a task into clear steps makes it easier to understand, test, and debug."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "A school wants to use students' photos to test an AI tool. What should it consider first?",
+    options: ["Whether there is valid permission and a clear reason to use the photos", "Whether the photos can be collected without telling anyone", "Whether the tool can keep the photos forever", "Whether every student has the same type of phone"],
+    answer: 0,
+    explanation: "People should understand and agree to appropriate uses of their personal information."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "Which item is most clearly personal information?",
+    options: ["A student's full name linked to their home address", "The number of pages in a public textbook", "A general weather forecast for the city", "The name of a common programming language"],
+    answer: 0,
+    explanation: "A name connected to a home address can identify and locate a particular person."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "An AI system gives one group fewer opportunities because its training examples were unbalanced. What is the main ethical concern?",
+    options: ["Fairness", "File compression", "Screen resolution", "Network speed"],
+    answer: 0,
+    explanation: "Unbalanced data can contribute to unfair differences in outcomes between groups."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "Why is it useful to tell people when AI helped make an important decision?",
+    options: ["It helps people understand the process and ask questions about it", "It guarantees the decision was correct", "It prevents the AI system from making any mistakes", "It removes the need to keep decision records"],
+    answer: 0,
+    explanation: "Transparency helps affected people understand how a decision was made and seek review when appropriate."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "Who should be responsible for checking an AI system used by an organization?",
+    options: ["The organization using it should oversee its use, not blame the tool alone", "The AI system alone, because software accepts responsibility", "The people affected, even if they cannot inspect the system", "No one, if the system passed one test"],
+    answer: 0,
+    explanation: "Organizations remain responsible for how they choose, monitor, and use AI tools."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "A student is denied a benefit by an automated system. Why might an explanation matter?",
+    options: ["It can help the student understand the reason and challenge an error", "It proves that the decision cannot be unfair", "It makes the training data unnecessary", "It ensures the same result for every future student"],
+    answer: 0,
+    explanation: "Clear reasons can help people identify mistakes and request an appropriate review."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "What is a sensible way to check whether an AI decision tool treats groups unfairly?",
+    options: ["Compare its errors and outcomes across relevant groups", "Check only its overall average accuracy", "Ask only the people who received the best result", "Hide group information before evaluating any results"],
+    answer: 0,
+    explanation: "Group-level comparisons can reveal differences that a single overall score might hide."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "You see a dramatic video of a public figure making an unexpected statement. What is a careful response?",
+    options: ["Look for reliable confirmation before sharing because video can be manipulated", "Share it quickly because videos are always genuine", "Assume it is fake because all online videos are edited", "Use the number of views as proof that it is real"],
+    answer: 0,
+    explanation: "Synthetic or edited media can look convincing; check credible sources before believing or sharing it."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "A student uses AI to create an image for a class presentation. What is a responsible step?",
+    options: ["Follow class rules and be clear about AI assistance when required", "Claim that the image was drawn by hand", "Assume generated content never needs review", "Include private details in the prompt to make it unique"],
+    answer: 0,
+    explanation: "Following assignment rules and disclosing assistance when asked supports honesty and trust."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "Why should you avoid entering a friend's private details into an unfamiliar AI service?",
+    options: ["The service may store or process the information in ways you cannot control", "AI services automatically erase every prompt immediately", "Private details improve answers but cannot identify anyone", "Only passwords count as information that should be protected"],
+    answer: 0,
+    explanation: "Before sharing personal information, consider how the service may collect, store, or use it."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "An AI answer includes a quotation and a source that you cannot find. What should you do?",
+    options: ["Verify the quotation using a reliable source before using it", "Cite it because the answer included a source name", "Assume it is correct if the wording sounds formal", "Change a few words and treat it as verified"],
+    answer: 0,
+    explanation: "AI systems can produce inaccurate claims or references, so quotations and sources need independent checking."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "Which design choice can make an AI learning app more accessible?",
+    options: ["Offer captions and more than one way to receive instructions", "Use color alone to show every important warning", "Require fast responses with no pause option", "Make text smaller so more content fits on screen"],
+    answer: 0,
+    explanation: "Captions and multiple ways to access information can help people with different needs."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "Why should a person remain involved when AI supports a high-impact decision?",
+    options: ["A person can consider context and review unusual or harmful outcomes", "Human involvement guarantees that no one will be treated unfairly", "AI systems cannot produce any useful information", "A person can make the decision without checking evidence"],
+    answer: 0,
+    explanation: "Human oversight can add context and provide a way to review consequential decisions, though it also needs care."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "What does data minimization mean?",
+    options: ["Collect only the information needed for a clear purpose", "Collect every available detail in case it is useful later", "Keep information forever to avoid collecting it again", "Share a dataset widely so each copy is smaller"],
+    answer: 0,
+    explanation: "Collecting less unnecessary personal information can reduce privacy risks."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "A classroom camera system could identify students throughout the day. What is an important question to ask?",
+    options: ["Is this monitoring necessary, proportionate, and clearly explained?", "Can the system keep more footage than the school can review?", "Can students be monitored without knowing why?", "Can the footage be used for unrelated purposes later?"],
+    answer: 0,
+    explanation: "Monitoring should have a clear need, appropriate limits, and understandable rules."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "Before using an AI tool with students, what is a responsible safety step?",
+    options: ["Check its limitations, privacy practices, and possible harmful results", "Assume a popular tool is safe for every age and task", "Allow it to make important decisions without testing", "Use real student data first and review the rules later"],
+    answer: 0,
+    explanation: "Reviewing risks and privacy practices before use helps prevent avoidable harm."
+},
+{
+    category: "AI Ethics", topic: "Ethics",
+    question: "You notice an AI tool repeatedly gives harmful or unfair responses. What is a responsible action?",
+    options: ["Document the issue and report it through an appropriate channel", "Keep using it because one result cannot matter", "Share the harmful output widely without context", "Try to hide the issue so the tool looks reliable"],
+    answer: 0,
+    explanation: "Documenting and reporting problems can help responsible people investigate and reduce harm."
+}
+
+];
+
+
+// ========================================
+// GAME VARIABLES
+// ========================================
+
+const teamEmojis = ["🔴", "🔵", "🟢", "🟡"];
+
+let teams = [];
+let questions = [];
+let currentQuestion = 0;
+let activeTeam = 0;
+let timerValue = 20;
+let timerInterval = null;
+let timerRunning = false;
+let answerRevealed = false;
+let answered = false;
+let gameFinished = false;
+
+
+// ========================================
+// TEAM SETUP
+// ========================================
+
+function renderTeamInputs() {
+
+    const count = Number(
+        document.getElementById("teamCount").value
+    );
+
+    const container = document.getElementById("teamInputs");
+
+    container.innerHTML = "";
+
+    for (let i = 0; i < count; i++) {
+
+        const box = document.createElement("div");
+        box.className = "team-input";
+
+        const emoji = document.createElement("span");
+        emoji.textContent = teamEmojis[i];
+
+        const input = document.createElement("input");
+        input.id = "teamName" + i;
+        input.value = "Team " + (i + 1);
+        input.maxLength = 22;
+        input.placeholder = "Enter team name";
+
+        box.append(emoji, input);
+
+        container.appendChild(box);
+
+    }
+}
+
+renderTeamInputs();
+
+
+// ========================================
+// START GAME
+// ========================================
+
+function startGame() {
+
+    const count = Number(
+        document.getElementById("questionCount").value
+    );
+
+    const selectedTopic = document.getElementById("subject").value;
+
+    let available = selectedTopic === "All"
+        ? [...questionBank]
+        : questionBank.filter(q => q.topic === selectedTopic);
+
+    if (available.length === 0) {
+        alert("No questions available for this topic.");
+        return;
+    }
+
+    // Shuffle questions and answer choices so the correct option is not predictable.
+    for (let i = available.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [available[i], available[j]] = [available[j], available[i]];
+    }
+
+    questions = available
+        .slice(0, Math.min(count, available.length))
+        .map(question => {
+            const options = question.options.map((text, index) => ({
+                text,
+                index
+            }));
+
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            return {
+                ...question,
+                options: options.map(option => option.text),
+                answer: options.findIndex(option => option.index === question.answer)
+            };
+        });
+
+    const teamCount = Number(
+        document.getElementById("teamCount").value
+    );
+
+    teams = [];
+
+    for (let i = 0; i < teamCount; i++) {
+
+        const name = document.getElementById("teamName" + i).value.trim();
+
+        teams.push({
+            name: name || "Team " + (i + 1),
+            emoji: teamEmojis[i],
+            score: 0
+        });
+
+    }
+
+    currentQuestion = 0;
+    activeTeam = 0;
+    gameFinished = false;
+
+    document.getElementById("setupScreen").classList.add("hidden");
+    document.getElementById("winnerScreen").classList.add("hidden");
+    document.getElementById("gameScreen").classList.remove("hidden");
+
+    renderScoreboard();
+    showQuestion();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+}
+
+
+// ========================================
+// DISPLAY QUESTION
+// ========================================
+
+function showQuestion() {
+
+    clearInterval(timerInterval);
+
+    answered = false;
+    answerRevealed = false;
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("roundLabel").textContent =
+        "QUESTION " + (currentQuestion + 1) + " / " + questions.length;
+
+    document.getElementById("category").textContent =
+        q.category.toUpperCase();
+
+    document.getElementById("questionText").textContent =
+        q.question;
+
+    document.getElementById("explanation").textContent =
+        "💡 " + q.explanation;
+
+    document.getElementById("explanation").classList.remove("show");
+
+    document.getElementById("progressBar").style.width =
+        ((currentQuestion + 1) / questions.length * 100) + "%";
+
+    const options = document.getElementById("options");
+
+    options.innerHTML = "";
+
+    const letters = ["A", "B", "C", "D"];
+
+    q.options.forEach((option, index) => {
+
+        const btn = document.createElement("button");
+
+        btn.className = "option";
+
+        const letter = document.createElement("span");
+        letter.className = "letter";
+        letter.textContent = letters[index];
+
+        const text = document.createTextNode(option);
+
+        btn.append(letter, text);
+
+        btn.onclick = () => selectOption(index);
+
+        options.appendChild(btn);
+
+    });
+
+    document.getElementById("revealBtn").disabled = false;
+    document.getElementById("correctBtn").disabled = false;
+    document.getElementById("wrongBtn").disabled = false;
+    document.getElementById("nextBtn").disabled = false;
+
+    document.getElementById("correctBtn").textContent =
+        "✅ Award 10 Points";
+
+    updateActiveTeam();
+
+    startTimer();
+
+}
+
+
+// ========================================
+// TEAM SELECTION
+// ========================================
+
+function selectTeam(index) {
+
+    if (answered) return;
+
+    activeTeam = index;
+
+    updateActiveTeam();
+    renderScoreboard();
+
+}
+
+function updateActiveTeam() {
+
+    document.getElementById("turnLabel").textContent =
+        teams[activeTeam].emoji + " " +
+        teams[activeTeam].name + "'s Turn";
+
+}
+
+
+// ========================================
+// SCOREBOARD
+// ========================================
+
+function renderScoreboard() {
+
+    const board = document.getElementById("scoreboard");
+
+    board.innerHTML = "";
+
+    teams.forEach((team, index) => {
+
+        const card = document.createElement("div");
+
+        card.className = "team-score" +
+            (index === activeTeam ? " active" : "");
+
+        card.onclick = () => selectTeam(index);
+
+        const top = document.createElement("div");
+        top.className = "team-score-top";
+
+        const name = document.createElement("span");
+        name.className = "team-score-name";
+        name.textContent = team.emoji + " " + team.name;
+
+        const score = document.createElement("span");
+        score.className = "team-score-value";
+        score.textContent = team.score;
+
+        top.append(name, score);
+
+        const tag = document.createElement("div");
+        tag.className = "active-tag";
+        tag.textContent =
+            index === activeTeam ? "● ACTIVE TEAM" : "TAP TO SELECT";
+
+        card.append(top, tag);
+
+        board.appendChild(card);
+
+    });
+
+}
+
+
+// ========================================
+// TIMER
+// ========================================
+
+function startTimer() {
+
+    clearInterval(timerInterval);
+
+    timerValue = Number(
+        document.getElementById("timerDuration").value
+    );
+
+    const timer = document.getElementById("timer");
+
+    if (timerValue === 0) {
+
+        timer.textContent = "⏱ NO TIMER";
+        timer.classList.remove("danger");
+        return;
+
+    }
+
+    timer.textContent = "⏱ " + timerValue + "s";
+    timer.classList.remove("danger");
+
+    timerInterval = setInterval(() => {
+
+        timerValue--;
+
+        timer.textContent = "⏱ " + timerValue + "s";
+
+        if (timerValue <= 5) {
+            timer.classList.add("danger");
+        }
+
+        if (timerValue <= 0) {
+
+            clearInterval(timerInterval);
+
+            timer.textContent = "⏰ TIME UP!";
+
+            if (!answered) {
+                markWrong();
+            }
+
+        }
+
+    }, 1000);
+
+}
+
+
+// ========================================
+// ANSWER SELECTION
+// ========================================
+
+function selectOption(index) {
+
+    if (answered) return;
+
+    const buttons = document.querySelectorAll(".option");
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    clearInterval(timerInterval);
+
+    const correct = questions[currentQuestion].answer;
+
+    buttons[correct].classList.add("correct");
+
+    if (index !== correct) {
+        buttons[index].classList.add("wrong");
+    }
+
+    revealAnswer();
+    answered = true;
+
+    document.getElementById("correctBtn").disabled = true;
+    document.getElementById("wrongBtn").disabled = true;
+
+    if (index === correct) {
+        teams[activeTeam].score += 10;
+        document.getElementById("correctBtn").textContent =
+            "⭐ +10 POINTS AWARDED";
+        renderScoreboard();
+        celebrate();
+    } else {
+        document.getElementById("wrongBtn").textContent =
+            "❌ NO POINTS";
+    }
+
+}
+
+
+// ========================================
+// REVEAL ANSWER
+// ========================================
+
+function revealAnswer() {
+
+    if (answerRevealed) return;
+
+    answerRevealed = true;
+
+    clearInterval(timerInterval);
+
+    const q = questions[currentQuestion];
+
+    const buttons = document.querySelectorAll(".option");
+
+    buttons[q.answer].classList.add("correct");
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    document.getElementById("explanation").classList.add("show");
+
+    document.getElementById("revealBtn").disabled = true;
+
+}
+
+
+// ========================================
+// AWARD POINTS
+// ========================================
+
+function awardPoints() {
+
+    if (answered) {
+        alert("This question has already been scored.");
+        return;
+    }
+
+    if (!answerRevealed) {
+        revealAnswer();
+    }
+
+    teams[activeTeam].score += 10;
+
+    answered = true;
+
+    document.getElementById("correctBtn").disabled = true;
+    document.getElementById("wrongBtn").disabled = true;
+
+    document.getElementById("correctBtn").textContent =
+        "⭐ +10 POINTS AWARDED";
+
+    renderScoreboard();
+
+    celebrate();
+
+}
+
+
+// ========================================
+// NO POINTS
+// ========================================
+
+function markWrong() {
+
+    if (answered) return;
+
+    answered = true;
+
+    revealAnswer();
+
+    document.getElementById("correctBtn").disabled = true;
+    document.getElementById("wrongBtn").disabled = true;
+
+    document.getElementById("wrongBtn").textContent =
+        "❌ NO POINTS";
+
+}
+
+
+// ========================================
+// NEXT QUESTION
+// ========================================
+
+function nextQuestion() {
+
+    if (!answered) {
+
+        const proceed = confirm(
+            "This question has not been scored. Move to the next question?"
+        );
+
+        if (!proceed) return;
+
+    }
+
+    currentQuestion++;
+
+    if (currentQuestion >= questions.length) {
+
+        finishGame();
+        return;
+
+    }
+
+    showQuestion();
+
+}
+
+
+// ========================================
+// FINAL RESULTS
+// ========================================
+
+function finishGame() {
+
+    clearInterval(timerInterval);
+
+    gameFinished = true;
+
+    document.getElementById("gameScreen").classList.add("hidden");
+
+    document.getElementById("winnerScreen").classList.remove("hidden");
+
+    const sorted = [...teams].sort(
+        (a, b) => b.score - a.score
+    );
+
+    const winners = sorted.filter(
+        team => team.score === sorted[0].score
+    );
+
+    let winnerText;
+
+    if (winners.length > 1) {
+        winnerText = "🤝 It's a Tie!";
+    } else {
+        winnerText = sorted[0].emoji + " " + sorted[0].name;
+    }
+
+    document.getElementById("winnerName").textContent =
+        winnerText;
+
+    const final = document.getElementById("finalScores");
+
+    final.innerHTML = "";
+
+    sorted.forEach((team, index) => {
+
+        const row = document.createElement("div");
+
+        row.className = "final-score-row";
+
+        const name = document.createElement("span");
+        name.textContent =
+            ["🥇 ", "🥈 ", "🥉 ", "🏅 "][index] +
+            team.emoji + " " + team.name;
+
+        const score = document.createElement("span");
+        score.textContent = team.score + " Points";
+
+        row.append(name, score);
+
+        final.appendChild(row);
+
+    });
+
+    celebrate();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+}
+
+
+// ========================================
+// CELEBRATION
+// ========================================
+
+function celebrate() {
+
+    const emojis = ["🎉", "⭐", "🎊", "🏆", "✨", "🎈"];
+
+    for (let i = 0; i < 28; i++) {
+
+        const item = document.createElement("div");
+
+        item.className = "confetti";
+
+        item.textContent =
+            emojis[Math.floor(Math.random() * emojis.length)];
+
+        item.style.left = Math.random() * 100 + "vw";
+
+        item.style.animationDelay = Math.random() * 1 + "s";
+
+        document.body.appendChild(item);
+
+        setTimeout(() => item.remove(), 4000);
+
+    }
+
+}
+
+
+// ========================================
+// PROJECTOR MODE
+// ========================================
+
+function toggleProjector() {
+
+    document.body.classList.toggle("projector");
+
+    if (!document.fullscreenElement) {
+
+        document.documentElement.requestFullscreen?.().catch(() => {});
+
+    } else {
+
+        document.exitFullscreen?.();
+
+    }
+
+}
+
+
+// ========================================
+// HOME / RESET
+// ========================================
+
+function goHome() {
+
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    const gameActive =
+        !document.getElementById("gameScreen").classList.contains("hidden");
+
+    if (gameActive && !confirm("Are you sure you want to exit this game? Your scores will be lost.")) {
+        return;
+    }
+
+    document.getElementById("setupScreen").classList.remove("hidden");
+    document.getElementById("gameScreen").classList.add("hidden");
+    document.getElementById("winnerScreen").classList.add("hidden");
+
+    document.getElementById("progressBar").style.width = "0%";
+
+    teams = [];
+    questions = [];
+    currentQuestion = 0;
+    activeTeam = 0;
+    answered = false;
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+}
+
+</script>
+
+</body>
+</html>
